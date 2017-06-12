@@ -16,7 +16,7 @@ namespace alex_asr {
         void InputFinished();
         OnlineIvectorFeature* GetIvectorFeature();
     private:
-        OnlineMfcc *mfcc_;
+        OnlineBaseFeature *base_feature_;
         OnlineCmvn *cmvn_;
         OnlineCmvnState *cmvn_state_;
         OnlineSpliceFrames *splice_;

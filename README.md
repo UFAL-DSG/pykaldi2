@@ -53,6 +53,7 @@ Example of `alex_asr.conf` that should reside in `model_dir`:
 
 ```
 --model_type=nnet2     # Supported model types are nnet2 (nnet2::AmNnet) and gmm (AmDiagGmm)
+--feature_type=mfcc    # Supported feature types are mfcc and fbank
 --model=final.mdl      # Filename of the mdl file for the decoder.
 --hclg=HCLG.fst        # Filename of the fst file with decoding HCLG fst.
 --words=words.txt      # Filename with a list of words (each line contains: ""<word> <word-id>").
@@ -73,6 +74,7 @@ Example of `alex_asr.conf` that should reside in `model_dir`:
 --cfg_decoder=decoder.cfg
 --cfg_decodable=decodable.cfg
 --cfg_mfcc=mfcc.cfg
+--cfg_fbank=fbank.cfg
 --cfg_cmvn=cmvn.cfg
 --cfg_splice=splice.cfg
 --cfg_endpoint=endpoint.cfg
@@ -111,6 +113,16 @@ Example ``mfcc.cfg``:
 ```
 
 Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/feature-mfcc.h#L63
+
+## FBANK configuration
+
+Example ``fbank.cfg``:
+```
+--low-freq=128
+--high-freq=3800
+```
+
+Details: https://github.com/kaldi-asr/kaldi/blob/master/src/feat/feature-fbank.h#L62
 
 ## Online CMVN configuration
 

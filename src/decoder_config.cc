@@ -14,6 +14,7 @@ namespace alex_asr {
             cfg_decoder(""),
             cfg_decodable(""),
             cfg_mfcc(""),
+            cfg_fbank(""),
             cfg_cmvn(""),
             cfg_splice(""),
             cfg_endpoint(""),
@@ -33,6 +34,7 @@ namespace alex_asr {
 
     void DecoderConfig::Register(ParseOptions *po) {
         po->Register("model_type", &model_type_str, "Type of model. GMM/NNET2");
+        po->Register("feature_type", &feature_type_str, "Type of features. MFCC/FBANK");
         po->Register("model", &model_rxfilename, "Accoustic model filename.");
         po->Register("hclg", &fst_rxfilename, "HCLG FST filename.");
         po->Register("words", &words_rxfilename, "Word to ID mapping filename.");
@@ -47,6 +49,7 @@ namespace alex_asr {
         po->Register("cfg_decoder", &cfg_decoder, "");
         po->Register("cfg_decodable", &cfg_decodable, "");
         po->Register("cfg_mfcc", &cfg_mfcc, "");
+        po->Register("cfg_fbank", &cfg_fbank, "");
         po->Register("cfg_cmvn", &cfg_cmvn, "");
         po->Register("cfg_splice", &cfg_splice, "");
         po->Register("cfg_endpoint", &cfg_endpoint, "");
@@ -66,6 +69,7 @@ namespace alex_asr {
         LoadConfig(cfg_decoder, &decoder_opts);
         LoadConfig(cfg_decodable, &decodable_opts);
         LoadConfig(cfg_mfcc, &mfcc_opts);
+        LoadConfig(cfg_fbank, &fbank_opts);
         LoadConfig(cfg_cmvn, &cmvn_opts);
         LoadConfig(cfg_splice, &splice_opts);
         LoadConfig(cfg_endpoint, &endpoint_config);
@@ -160,9 +164,17 @@ namespace alex_asr {
             res = false;
 
             KALDI_ERR << "You have to specify a valid model_type.";
-
         }
 
+        if(feature_type_str == "mfcc" || feature_type_str == "") {
+            feature_type = MFCC;
+        } else if(feature_type_str == "fbank") {
+            feature_type = FBANK;
+        } else {
+            res = false;
+
+            KALDI_ERR << "You have to specify a valid feature_type.";
+        }
 
         res &= OptionCheck(use_ivectors && cfg_ivector == "",
                            "You have to specify --cfg_ivector if you want to use ivectors.");
@@ -192,5 +204,27 @@ namespace alex_asr {
             return false;
         }
         return true;
+    }
+
+    BaseFloat DecoderConfig::FrameShiftInSeconds() const {
+        if(feature_type == DecoderConfig::MFCC) {
+            return mfcc_opts.frame_opts.frame_shift_ms * 1.0e-03;
+        } else if(feature_type == DecoderConfig::FBANK) {
+            return fbank_opts.frame_opts.frame_shift_ms * 1.0e-03;
+        } else {
+            KALDI_ERR << "You have to specify a valid feature_type.";
+            return 0.0;
+        }
+    }
+
+    BaseFloat DecoderConfig::SamplingFrequency() const {
+        if(feature_type == DecoderConfig::MFCC) {
+            return mfcc_opts.frame_opts.samp_freq;
+        } else if(feature_type == DecoderConfig::FBANK) {
+            return fbank_opts.frame_opts.samp_freq;
+        } else {
+            KALDI_ERR << "You have to specify a valid feature_type.";
+            return 0.0;
+        }
     }
 }

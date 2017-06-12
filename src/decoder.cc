@@ -124,12 +124,12 @@ namespace alex_asr {
 
     bool Decoder::EndpointDetected() {
         return kaldi::EndpointDetected(config_->endpoint_config, *trans_model_,
-                                       config_->mfcc_opts.frame_opts.frame_shift_ms * 1.0e-03f,
+                                       config_->FrameShiftInSeconds(),
                                        *decoder_);
     }
 
     void Decoder::FrameIn(VectorBase<BaseFloat> *waveform_in) {
-        feature_pipeline_->AcceptWaveform(config_->mfcc_opts.frame_opts.samp_freq, *waveform_in);
+        feature_pipeline_->AcceptWaveform(config_->SamplingFrequency(), *waveform_in);
     }
 
     void Decoder::FrameIn(unsigned char *buffer, int32 buffer_length) {
